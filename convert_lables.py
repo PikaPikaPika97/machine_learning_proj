@@ -54,7 +54,7 @@ class DatasetProcessor:
 
         print("Dataset split completed.")
 
-    def convert_labels(self, input_csv, label_output_dir=None):
+    def csv2yolo(self, input_csv, label_output_dir=None):
         if label_output_dir is None:
             label_output_dir = self.label_dir
 
@@ -115,6 +115,42 @@ class DatasetProcessor:
 
         print("Conversion completed!")
 
+    def yolo_predictions_to_csv(self, results, csv_output_path):
+        """
+        将 Ultralytics YOLO 模型的预测结果转换为指定格式的 CSV 文件。
+
+        参数:
+            results: YOLO 模型预测结果的列表。
+            csv_output_path: 保存 CSV 文件的路径。
+        """
+        data = []
+
+        for result in results:
+            image_id = os.path.splitext(os.path.basename(result.path))[0]
+            for det in result.boxes:
+                # 获取预测框坐标和置信度（像素坐标）
+                x_center = det.xywh[0][0].item()
+                y_center = det.xywh[0][1].item()
+                width = det.xywh[0][2].item()
+                height = det.xywh[0][3].item()
+                conf = det.conf.item()
+
+                # 转换为左上角坐标，转换为整数
+                x_min = int(x_center - width / 2)
+                y_min = int(y_center - height / 2)
+                width = int(width)
+                height = int(height)
+
+                # 将置信度保留两位小数
+                conf = round(conf, 2)
+
+                # 生成预测字符串（像素坐标，整数）
+                prediction_string = f"{conf:.2f} {x_min} {y_min} {width} {height}"
+                data.append({'image_id': image_id, 'PredictionString': prediction_string})
+
+        # 创建 DataFrame 并保存为 CSV
+        df = pd.DataFrame(data)
+        df.to_csv(csv_output_path, index=False)
 
 # Example usage
 if __name__ == "__main__":
@@ -124,5 +160,5 @@ if __name__ == "__main__":
     split_output_dir = r"D:\code_local\Python\machine_learning_proj\dataset"
 
     processor = DatasetProcessor(image_dir, label_output_dir, split_output_dir)
-    # processor.convert_labels(input_csv, label_output_dir)
+    processor.csv2yolo(input_csv, label_output_dir)
     processor.split_dataset(split_output_dir=split_output_dir)  # Uncomment to split dataset
