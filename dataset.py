@@ -119,7 +119,7 @@ class DatasetProcessor:
 
         print("Conversion completed!")
 
-    def yolo_predictions_to_csv(self, results, csv_output_path):
+def yolo_predictions_to_csv(results, csv_output_path):
         """
         将 Ultralytics YOLO 模型的预测结果转换为指定格式的 CSV 文件。
 
@@ -157,7 +157,6 @@ class DatasetProcessor:
         # 创建 DataFrame 并保存为 CSV
         df = pd.DataFrame(data)
         df.to_csv(csv_output_path, index=False)
-
 
 # Example usage
 if __name__ == "__main__":
