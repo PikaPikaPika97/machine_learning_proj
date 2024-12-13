@@ -42,13 +42,17 @@ class DatasetProcessor:
         # Copy files to the respective directories
         for img_path in train_images:
             shutil.copy(img_path, dirs["train_images"])
-            lbl_path = os.path.join(self.label_dir, os.path.basename(img_path).replace(".jpg", ".txt"))
+            lbl_path = os.path.join(
+                self.label_dir, os.path.basename(img_path).replace(".jpg", ".txt")
+            )
             if os.path.exists(lbl_path):
                 shutil.copy(lbl_path, dirs["train_labels"])
 
         for img_path in val_images:
             shutil.copy(img_path, dirs["val_images"])
-            lbl_path = os.path.join(self.label_dir, os.path.basename(img_path).replace(".jpg", ".txt"))
+            lbl_path = os.path.join(
+                self.label_dir, os.path.basename(img_path).replace(".jpg", ".txt")
+            )
             if os.path.exists(lbl_path):
                 shutil.copy(lbl_path, dirs["val_labels"])
 
@@ -146,19 +150,26 @@ class DatasetProcessor:
 
                 # 生成预测字符串（像素坐标，整数）
                 prediction_string = f"{conf:.2f} {x_min} {y_min} {width} {height}"
-                data.append({'image_id': image_id, 'PredictionString': prediction_string})
+                data.append(
+                    {"image_id": image_id, "PredictionString": prediction_string}
+                )
 
         # 创建 DataFrame 并保存为 CSV
         df = pd.DataFrame(data)
         df.to_csv(csv_output_path, index=False)
 
+
 # Example usage
 if __name__ == "__main__":
     input_csv = r"D:\code_local\Python\machine_learning_proj\wheat_dataset\train.csv"
-    label_output_dir = r"D:\code_local\Python\machine_learning_proj\wheat_dataset\labels"
+    label_output_dir = (
+        r"D:\code_local\Python\machine_learning_proj\wheat_dataset\labels"
+    )
     image_dir = r"D:\code_local\Python\machine_learning_proj\wheat_dataset\train"
     split_output_dir = r"D:\code_local\Python\machine_learning_proj\dataset"
 
     processor = DatasetProcessor(image_dir, label_output_dir, split_output_dir)
     processor.csv2yolo(input_csv, label_output_dir)
-    processor.split_dataset(split_output_dir=split_output_dir)  # Uncomment to split dataset
+    processor.split_dataset(
+        split_output_dir=split_output_dir
+    )  # Uncomment to split dataset
