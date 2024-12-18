@@ -166,3 +166,5 @@ wheat_dataset/
 # weights
 *.pt
 machine_learning_proj.code-workspace
+
+runs/
